@@ -13,7 +13,6 @@ PKG_HOST_ONLY:=1
 
 HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/go-$(PKG_VERSION)
 HOST_GO_ROOT:=$(STAGING_DIR_HOSTPKG)/lib/go-cross
-HOST_UNPACK:=$(HOST_TAR) -C "$(HOST_BUILD_DIR)" --strip-components=1 -xzf "$(DL_DIR)/$(PKG_SOURCE)"
 
 include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
@@ -23,6 +22,11 @@ define Package/golang
   CATEGORY:=Languages
   TITLE:=用于交叉编译的 Go 主机工具链
   BUILDONLY:=1
+endef
+
+# 官方主机工具链直接解包，保留原始二进制和源码，不套用旧版补丁。
+define Host/Prepare
+	tar -C "$(HOST_BUILD_DIR)" --strip-components=1 -xzf "$(DL_DIR)/$(PKG_SOURCE)"
 endef
 
 define Host/Configure
