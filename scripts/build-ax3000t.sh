@@ -20,6 +20,20 @@ if [ "$ax3000t_jobs" -gt 4 ]; then
 	ax3000t_jobs=4
 fi
 
+finish_image() {
+	python3 scripts/ax3000t/check-build.py image
+	./scripts/diffconfig.sh > bin/targets/mediatek/mt7981/ax3000t-stock.diffconfig
+	git rev-parse HEAD > bin/targets/mediatek/mt7981/ax3000t-source-commit.txt
+	cp scripts/ax3000t/feeds.lock.json \
+		bin/targets/mediatek/mt7981/ax3000t-feeds.lock.json
+	(
+		cd bin/targets/mediatek/mt7981
+		sha256sum *xiaomi_mi-router-ax3000t-stock-squashfs-sysupgrade.bin \
+			> ax3000t-stock.sha256
+	)
+	printf '%s\n' '构建完成：bin/targets/mediatek/mt7981/'
+}
+
 case "$ax3000t_action" in
 	prepare)
 		python3 scripts/ax3000t/prepare.py
@@ -30,6 +44,14 @@ case "$ax3000t_action" in
 	download)
 		python3 scripts/ax3000t/check-build.py config
 		make download -j"$ax3000t_jobs"
+		;;
+	image)
+		python3 scripts/ax3000t/check-build.py config
+		mkdir -p logs
+		make package/install -j1 V=s 2>&1 | tee logs/ax3000t-package-install.log
+		make target/install -j"$ax3000t_jobs" V=s 2>&1 | tee logs/ax3000t-image.log
+		make package/index -j1 2>&1 | tee logs/ax3000t-package-index.log
+		finish_image
 		;;
 	build)
 		if [ "$(uname -m)" != x86_64 ]; then
@@ -49,20 +71,10 @@ case "$ax3000t_action" in
 			printf '%s\n' '并行构建失败，使用单线程输出详细错误。'
 			make -j1 V=s 2>&1 | tee logs/ax3000t-build-verbose.log
 		fi
-		python3 scripts/ax3000t/check-build.py image
-		./scripts/diffconfig.sh > bin/targets/mediatek/mt7981/ax3000t-stock.diffconfig
-		git rev-parse HEAD > bin/targets/mediatek/mt7981/ax3000t-source-commit.txt
-		cp scripts/ax3000t/feeds.lock.json \
-			bin/targets/mediatek/mt7981/ax3000t-feeds.lock.json
-		(
-			cd bin/targets/mediatek/mt7981
-			sha256sum *xiaomi_mi-router-ax3000t-stock-squashfs-sysupgrade.bin \
-				> ax3000t-stock.sha256
-		)
-		printf '%s\n' '构建完成：bin/targets/mediatek/mt7981/'
+		finish_image
 		;;
 	*)
-		printf '%s\n' '用法：build-ax3000t.sh prepare|check|download|build' >&2
+		printf '%s\n' '用法：build-ax3000t.sh prepare|check|download|build|image' >&2
 		exit 1
 		;;
 esac

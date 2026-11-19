@@ -11,7 +11,7 @@ import tarfile
 ROOT = Path(__file__).resolve().parents[2]
 DEVICE = "xiaomi_mi-router-ax3000t-stock"
 REQUIRED = [
-    "luci", "luci-ssl", "luci-theme-argon", "luci-app-mtwifi-cfg",
+    "luci", "luci-ssl-openssl", "luci-theme-argon", "luci-app-mtwifi-cfg",
     "luci-app-firewall", "luci-app-opkg", "luci-app-upnp", "luci-app-ddns",
     "luci-app-adblock", "adblock", "luci-app-passwall2", "xray-core",
     "geoview", "chinadns-ng", "lyaml", "v2ray-geoip", "v2ray-geosite",
@@ -43,6 +43,9 @@ def check_config():
     missing = [name for name in REQUIRED if f"CONFIG_PACKAGE_{name}" not in enabled]
     if missing:
         raise SystemExit("以下必需软件包未选中：" + "、".join(missing))
+    tls = {key for key in enabled if key.startswith("CONFIG_PACKAGE_libustream-")}
+    if tls != {"CONFIG_PACKAGE_libustream-openssl"}:
+        raise SystemExit("加密传输库必须统一使用 OpenSSL，避免安装文件冲突。")
     for symbol in ["CONFIG_LUCI_LANG_zh_Hans", "CONFIG_PACKAGE_dnsmasq_full_ipset",
                    "CONFIG_PACKAGE_luci-app-passwall2_Basic_Core_Xray",
                    "CONFIG_PACKAGE_luci-app-passwall2_Iptables_Transparent_Proxy"]:

@@ -63,6 +63,10 @@ bash scripts/build-ax3000t.sh build
 原有 `.config` 会备份到 `.config.before-ax3000t`。配置后不要另行执行
 `scripts/feeds update -a`，以免覆盖针对本分支的软件源适配；重新准备应继续使用准备脚本。
 
+HTTPS 管理界面统一采用 OpenSSL，避免两种加密传输实现争用同一文件。
+已有的软件包编译完成后，如仅需重新安装和封装镜像，可以执行
+`bash scripts/build-ax3000t.sh image`；它仍会检查实际包、版本及设备元数据。
+
 ## 构建产物与验证
 
 产物位于 `bin/targets/mediatek/mt7981/`，包括：
