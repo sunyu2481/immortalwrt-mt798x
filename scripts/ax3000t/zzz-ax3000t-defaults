@@ -4,6 +4,7 @@
 # 在基础设置之后应用中文界面和主题。
 uci -q batch <<'EOF'
 set luci.main.lang='zh_cn'
+set luci.languages.zh_cn='简体中文'
 set luci.main.mediaurlbase='/luci-static/argon'
 set system.@system[0].timezone='CST-8'
 set system.@system[0].zonename='Asia/Shanghai'

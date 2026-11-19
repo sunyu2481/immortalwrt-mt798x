@@ -76,6 +76,11 @@ def main():
         RESOURCES / "passwall2-extra.zh_Hans.po",
         passwall / "po/zh_Hans/passwall2-extra.po",
     )
+    xray_ui = passwall / "luasrc/model/cbi/passwall2/client/type/2_xray.lua"
+    xray_ui.write_text(xray_ui.read_text().replace(
+        '"XHTTP Extra " .. translate("Must be JSON text!")',
+        'translate("XHTTP Extra") .. " " .. translate("Must be JSON text!")',
+    ))
 
     feed_config = "".join(
         f"src-git {name} {source['url']}^{source['revision']}\n"
