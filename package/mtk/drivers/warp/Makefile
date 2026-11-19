@@ -23,6 +23,9 @@ PKG_KCONFIG:= \
 
 PKG_CONFIG_DEPENDS:=$(foreach c, $(PKG_KCONFIG),$(if $(CONFIG_$c),CONFIG_$(c)))
 
+# 无线驱动直接引用此目录的头文件，必须保留源码和模块符号表。
+override CONFIG_AUTOREMOVE:=
+
 include $(INCLUDE_DIR)/package.mk
 
 TAR_CMD=$(HOST_TAR) -C $(1)/.. $(TAR_OPTIONS)
