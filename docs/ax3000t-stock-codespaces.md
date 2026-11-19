@@ -10,13 +10,26 @@ DHCP、PPPoE、网络防火墙、SSH、软件包管理、UPnP 和常用诊断工
 
 - 默认简体中文界面及所选 LuCI 应用的简体中文语言包。
 - 默认 Argon 主题。
-- Passwall2 与 Xray，支持该内核提供的 VLESS、VMess、Trojan、Shadowsocks、Hysteria2 等协议。
-- Adblock 域名过滤，默认使用较轻量的 AdAway 和 Yoyo 规则。
+- Passwall2 与 Xray、sing-box，支持常用的 VLESS、VMess、Trojan、Shadowsocks、Hysteria2、TUIC 等协议。
+- 国内通用分流模板，配合预置的增强版 GeoIP、GeoSite 规则库使用。
+- Adblock 域名过滤，预置 AdGuard DNS、anti-AD、AdAway、Yoyo 四组规则快照。
 - 动态域名设置及简体中文语言包。
 
-代理节点和订阅由使用者在刷机后填写。Adblock 的规则需要首次联网下载；
-域名过滤无法屏蔽同一域名提供的所有视频广告。AX3000T 内存为 256 MiB，
-本配置只启用 Xray；如果需要其他代理内核，应单独选择后重新构建。
+代理节点和订阅由使用者在刷机后填写，再选择分流模板中的默认代理节点。
+Xray 与 sing-box 均编入固件，默认分流模板使用 Xray，也可在界面切换为 sing-box。
+sing-box 编入 QUIC、uTLS、WireGuard、gRPC 和常用接口支持。
+
+内网和中国大陆流量直连，广告分类阻断，GFW 和国外域名使用所选择的默认节点。
+预置 GeoIP/GeoSite 已包含中国大陆、内网、常用代理域名和广告分类；sing-box
+使用 GeoView 从本地数据转换规则，无需首次下载这些规则。
+
+Adblock 首次启动直接还原固件内快照，四组规则合并去重约 22.9 万个域名。
+插件仍可在线更新，并将更新保存到备份目录；备份缺失时可回退到固件内快照。
+域名过滤无法屏蔽同一域名提供的所有视频广告。
+
+广告快照位于 `scripts/ax3000t/builtin-rules/`，附来源网址、数量和校验值。
+更新固件内快照可执行 `python3 scripts/ax3000t/update-builtin-rules.py`，
+随后重新准备配置并生成镜像。
 
 ## 在 Codespaces 构建
 

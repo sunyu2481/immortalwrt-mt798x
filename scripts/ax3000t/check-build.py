@@ -2,10 +2,13 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
 import json
+import gzip
+import hashlib
 from pathlib import Path
 import subprocess
 import sys
 import tarfile
+import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -13,7 +16,7 @@ DEVICE = "xiaomi_mi-router-ax3000t-stock"
 REQUIRED = [
     "luci", "luci-ssl-openssl", "luci-theme-argon", "luci-app-mtwifi-cfg",
     "luci-app-firewall", "luci-app-opkg", "luci-app-upnp", "luci-app-ddns",
-    "luci-app-adblock", "adblock", "luci-app-passwall2", "xray-core",
+    "luci-app-adblock", "adblock", "luci-app-passwall2", "xray-core", "sing-box",
     "geoview", "chinadns-ng", "lyaml", "v2ray-geoip", "v2ray-geosite",
     "dnsmasq-full", "firewall",
     "iptables-mod-tproxy", "kmod-ipt-tproxy", "kmod-mt_wifi",
@@ -47,7 +50,7 @@ def check_config():
     if tls != {"CONFIG_PACKAGE_libustream-openssl"}:
         raise SystemExit("加密传输库必须统一使用 OpenSSL，避免安装文件冲突。")
     for symbol in ["CONFIG_LUCI_LANG_zh_Hans", "CONFIG_PACKAGE_dnsmasq_full_ipset",
-                   "CONFIG_PACKAGE_luci-app-passwall2_Basic_Core_Xray",
+                   "CONFIG_PACKAGE_luci-app-passwall2_Basic_Core_All",
                    "CONFIG_PACKAGE_luci-app-passwall2_Iptables_Transparent_Proxy"]:
         if symbol not in enabled:
             raise SystemExit(f"必需配置未启用：{symbol}")
@@ -69,8 +72,10 @@ def check_image():
         raise SystemExit("镜像缺少必需软件包：" + "、".join(sorted(missing)))
     versions = {line.split()[0]: line.split()[-1]
                 for line in manifests[0].read_text().splitlines() if line}
-    for name, version in {"xray-core": "26.11.9", "luci-app-passwall2": "26.11.11"}.items():
-        if not versions.get(name, "").startswith(version + "-"):
+    for name, version in {"xray-core": "26.11.9", "sing-box": "1.14.4",
+                          "luci-app-passwall2": "26.11.11"}.items():
+        actual = versions.get(name, "")
+        if actual != version and not actual.startswith(version + "-"):
             raise SystemExit(f"镜像中的代理组件版本不匹配：{name} {versions.get(name)}")
     with tarfile.open(image) as archive:
         files = {Path(member.name).name: member.size for member in archive.getmembers()
@@ -86,7 +91,49 @@ def check_image():
     supported = json.loads(metadata).get("supported_devices", [])
     if "xiaomi,mi-router-ax3000t-stock" not in supported:
         raise SystemExit(f"镜像设备元数据不匹配：{supported}")
+    # 直接解开最终镜像，检查双核心和预置规则，避免只验证构建配置。
+    unpacker = next((ROOT / "staging_dir/host/bin" / name for name in
+                     ["unsquashfs4", "unsquashfs"]
+                     if (ROOT / "staging_dir/host/bin" / name).is_file()), None)
+    if unpacker is None:
+        raise SystemExit("缺少文件系统解包工具，不能检查预置规则。")
+    with tempfile.TemporaryDirectory(prefix="ax3000t-image-check-") as temporary:
+        temporary = Path(temporary)
+        squashfs = temporary / "root.squashfs"
+        with tarfile.open(image) as archive:
+            member = next(member for member in archive.getmembers()
+                          if Path(member.name).name == "root")
+            squashfs.write_bytes(archive.extractfile(member).read())
+        extracted = temporary / "rootfs"
+        subprocess.run([str(unpacker), "-no-progress", "-d", str(extracted), str(squashfs)],
+                       check=True, stdout=subprocess.DEVNULL)
+        check_builtins(extracted)
     print(f"镜像检查通过：{image.name}，内核 {files['kernel']} 字节，根文件系统 {files['root']} 字节。")
+
+
+def check_builtins(rootfs):
+    for name in ["xray", "sing-box"]:
+        binary = (rootfs / "usr/bin" / name).read_bytes()
+        if binary[:4] != b"\x7fELF" or int.from_bytes(binary[18:20], "little") != 183:
+            raise SystemExit(f"代理核心不是正确的 ARM64 程序：{name}")
+    for name in ["geoip.dat", "geosite.dat"]:
+        if (rootfs / "usr/share/v2ray" / name).stat().st_size < 10000:
+            raise SystemExit(f"缺少预置地理分流数据：{name}")
+    config = (rootfs / "etc/config/passwall2").read_text()
+    for value in ["geosite:cn", "geoip:cn", "geoip:private", "geosite:gfw",
+                  "geosite:geolocation-!cn", "geosite:category-ads-all"]:
+        if value not in config:
+            raise SystemExit(f"缺少国内通用分流配置：{value}")
+    folder = rootfs / "usr/share/ax3000t/adblock"
+    manifest = json.loads((folder / "manifest.json").read_text())
+    for name in ["adaway", "adguard", "anti_ad", "yoyo"]:
+        source = manifest["来源"][name]
+        packed = (folder / source["备份文件"]).read_bytes()
+        if hashlib.sha256(packed).hexdigest() != source["备份SHA256"]:
+            raise SystemExit(f"固件内广告规则校验失败：{name}")
+        if len(gzip.decompress(packed).splitlines()) != source["域名数"]:
+            raise SystemExit(f"固件内广告规则数量不匹配：{name}")
+    print("双核心、国内分流配置和四组离线广告规则已通过镜像内容检查。")
 
 
 if __name__ == "__main__":

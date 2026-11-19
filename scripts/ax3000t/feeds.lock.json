@@ -21,6 +21,7 @@
     "paths": [
       "chinadns-ng",
       "geoview",
+      "sing-box",
       "tcping",
       "v2ray-geodata",
       "xray-core"

@@ -1,0 +1,38 @@
+{
+  "更新时间": "2026-11-19T07:18:12.664593+00:00",
+  "来源": {
+    "adaway": {
+      "名称": "AdAway",
+      "网址": "https://raw.githubusercontent.com/AdAway/adaway.github.io/master/hosts.txt",
+      "域名数": 6540,
+      "源文件SHA256": "8c925c37a5eaa5e1c582c76e12301797861addee5ad0fa0e6e46c9dd0136fe55",
+      "备份文件": "adb_list.adaway.gz",
+      "备份SHA256": "fb250c9bfd40a949ccd1b95e19efb859dfb7e6fd541427f3a1dab1e05f594aff"
+    },
+    "adguard": {
+      "名称": "AdGuard DNS",
+      "网址": "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt",
+      "域名数": 190516,
+      "源文件SHA256": "4afef33fb3936aaed14d0570b33df777381f36fda2df8f0e094650d1f8d5a975",
+      "备份文件": "adb_list.adguard.gz",
+      "备份SHA256": "ffee9d26951aea26e8e4d9092e175898ceef5809b1857ddcd74568b994b750bf"
+    },
+    "anti_ad": {
+      "名称": "anti-AD",
+      "网址": "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-domains.txt",
+      "域名数": 109446,
+      "源文件SHA256": "6f428086f73a0531a279f723bc12b2238b35ee8af0b9b1c7ecf232f214c6affe",
+      "备份文件": "adb_list.anti_ad.gz",
+      "备份SHA256": "1fb0f9ecc1f7bbd51a691bb74b5d41e41a1c933c4e8cb9312640a611b2a0b242"
+    },
+    "yoyo": {
+      "名称": "Yoyo",
+      "网址": "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=nohtml&showintro=0&mimetype=plaintext",
+      "域名数": 3568,
+      "源文件SHA256": "7d37e80fd1a6ab1403280f627d63732f111ff245ed67eada8f6c1df5f7d094ea",
+      "备份文件": "adb_list.yoyo.gz",
+      "备份SHA256": "4eac8b3ae518fda1fc705b341099777f6591b647655ff5eff73f06cd9151cbb9"
+    }
+  },
+  "去重域名数": 229092
+}

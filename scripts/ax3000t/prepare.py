@@ -82,6 +82,19 @@ def main():
         'translate("XHTTP Extra") .. " " .. translate("Must be JSON text!")',
     ))
 
+    # 更新失败或首次启动时，广告插件可回退到固件内的规则快照。
+    adblock = ROOT / "feeds/packages/net/adblock/files/adblock.sh"
+    fallback = '''		"restore")
+			if [ -n "${src_name}" ] && [ ! -s "${adb_backupdir}/${adb_dnsprefix}.${src_name}.gz" ] &&
+				[ -s "/usr/share/ax3000t/adblock/${adb_dnsprefix}.${src_name}.gz" ]; then
+				mkdir -p "${adb_backupdir}"
+				cp "/usr/share/ax3000t/adblock/${adb_dnsprefix}.${src_name}.gz" "${adb_backupdir}/"
+			fi
+'''
+    text = adblock.read_text()
+    if "/usr/share/ax3000t/adblock/" not in text:
+        adblock.write_text(text.replace('\t\t"restore")\n', fallback))
+
     feed_config = "".join(
         f"src-git {name} {source['url']}^{source['revision']}\n"
         for name, source in sources.items()
@@ -111,6 +124,17 @@ def main():
     defaults.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(RESOURCES / "zzz-ax3000t-defaults", defaults)
     defaults.chmod(0o755)
+    passwall_config = ROOT / "files/etc/config/passwall2"
+    passwall_config.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(RESOURCES / "passwall2.config", passwall_config)
+    snapshots = RESOURCES / "builtin-rules"
+    if not (snapshots / "manifest.json").is_file():
+        raise SystemExit("缺少固件内规则快照，请先执行 update-builtin-rules.py。")
+    destination = ROOT / "files/usr/share/ax3000t/adblock"
+    destination.mkdir(parents=True, exist_ok=True)
+    for source in snapshots.iterdir():
+        if source.is_file():
+            shutil.copyfile(source, destination / source.name)
 
     config = ROOT / ".config"
     if config.exists():

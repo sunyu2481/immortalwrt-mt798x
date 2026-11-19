@@ -13,13 +13,25 @@ set adblock.global.adb_dns='dnsmasq'
 set adblock.global.adb_forcedns='0'
 set adblock.global.adb_maxqueue='1'
 set adblock.global.adb_report='0'
-set adblock.global.adb_backup='0'
+set adblock.global.adb_backup='1'
+set adblock.global.adb_backupdir='/etc/adblock/backup'
 delete adblock.global.adb_sources
 add_list adblock.global.adb_sources='adaway'
+add_list adblock.global.adb_sources='adguard'
+add_list adblock.global.adb_sources='anti_ad'
 add_list adblock.global.adb_sources='yoyo'
 commit luci
 commit system
 commit adblock
 EOF
+
+# 规则快照供首次启动离线还原，后续由插件更新备份。
+mkdir -p /etc/adblock/backup
+for ax3000t_rule in /usr/share/ax3000t/adblock/adb_list.*.gz; do
+	[ -s "$ax3000t_rule" ] || continue
+	ax3000t_name=${ax3000t_rule##*/}
+	[ -s "/etc/adblock/backup/$ax3000t_name" ] || \
+		cp "$ax3000t_rule" "/etc/adblock/backup/$ax3000t_name"
+done
 
 exit 0
