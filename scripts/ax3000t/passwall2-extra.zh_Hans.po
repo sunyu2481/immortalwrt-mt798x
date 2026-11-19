@@ -1,0 +1,160 @@
+# 补充上游新增界面标签及其中文说明。
+# SPDX-License-Identifier: GPL-3.0-only
+msgid ""
+msgstr ""
+"Language: zh_Hans\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "ALPN"
+msgstr "应用层协议协商"
+
+msgid "BASE64"
+msgstr "Base64 编码"
+
+msgid "Collecting data..."
+msgstr "正在收集数据……"
+
+msgid "Dest"
+msgstr "目标地址"
+
+msgid "DoH request address"
+msgstr "加密域名查询地址"
+
+msgid "Fallback"
+msgstr "回落配置"
+
+msgid "Format must be:"
+msgstr "格式必须为："
+
+msgid "GeoIP"
+msgstr "地理地址规则"
+
+msgid "HTTP Host"
+msgstr "HTTP 主机名"
+
+msgid "HTTP Path"
+msgstr "HTTP 路径"
+
+msgid "HTTPUpgrade Host"
+msgstr "HTTP 升级传输主机名"
+
+msgid "HTTPUpgrade Path"
+msgstr "HTTP 升级传输路径"
+
+msgid "HttpUpgrade Host"
+msgstr "HTTP 升级传输主机名"
+
+msgid "HttpUpgrade Path"
+msgstr "HTTP 升级传输路径"
+
+msgid "IP CIDR"
+msgstr "IP 地址与子网掩码"
+
+msgid "IPSet"
+msgstr "IP 地址集合"
+
+msgid "Invalid download task."
+msgstr "无效的下载任务。"
+
+msgid "KCP MTU"
+msgstr "KCP 最大传输单元"
+
+msgid "KCP Seed"
+msgstr "KCP 种子"
+
+msgid "Mux"
+msgstr "连接复用"
+
+msgid "Need node support required"
+msgstr "需要节点支持"
+
+msgid "Public key"
+msgstr "公钥"
+
+msgid "Realm STUN"
+msgstr "服务域穿透服务器"
+
+msgid "Realm URL"
+msgstr "服务域地址"
+
+msgid "Realms"
+msgstr "服务域模式"
+
+msgid "Reserved"
+msgstr "保留字节"
+
+msgid "STRING"
+msgstr "字符串"
+
+msgid "Settings"
+msgstr "设置"
+
+msgid "Short Id"
+msgstr "短标识"
+
+msgid "Sniffing Route Only"
+msgstr "嗅探仅用于路由"
+
+msgid "Spider X"
+msgstr "爬取路径"
+
+msgid "UDP over stream"
+msgstr "通过流传输 UDP"
+
+msgid "URLTest"
+msgstr "连接测速"
+
+msgid "User"
+msgstr "用户"
+
+msgid "Version"
+msgstr "版本"
+
+msgid "WebSocket Host"
+msgstr "WebSocket 主机名"
+
+msgid "WebSocket Path"
+msgstr "WebSocket 路径"
+
+msgid "XHTTP Extra"
+msgstr "XHTTP 扩展配置"
+
+msgid "XHTTP Host"
+msgstr "XHTTP 主机名"
+
+msgid "XHTTP Path"
+msgstr "XHTTP 路径"
+
+msgid "acceptProxyProtocol"
+msgstr "接收代理协议头"
+
+msgid "alpn"
+msgstr "应用层协议协商"
+
+msgid "default"
+msgstr "默认"
+
+msgid "flow"
+msgstr "流控模式"
+
+msgid "format: dest,path,xver"
+msgstr "格式：目标地址,路径,协议版本"
+
+msgid "maxConcurrentUploads"
+msgstr "最大并发上传数"
+
+msgid "maxUploadSize"
+msgstr "最大上传大小"
+
+msgid "minversion"
+msgstr "最低协议版本"
+
+msgid "native"
+msgstr "原生模式"
+
+msgid "reuse"
+msgstr "复用模式"
+
+msgid "serverNames"
+msgstr "服务端域名列表"

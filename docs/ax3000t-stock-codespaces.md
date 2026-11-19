@@ -10,13 +10,13 @@ DHCP、PPPoE、网络防火墙、SSH、软件包管理、UPnP 和常用诊断工
 
 - 默认简体中文界面及所选 LuCI 应用的简体中文语言包。
 - 默认 Argon 主题。
-- Passwall2 与 Xray，支持该内核提供的 VLESS、VMess、Trojan、Shadowsocks 等协议。
+- Passwall2 与 Xray，支持该内核提供的 VLESS、VMess、Trojan、Shadowsocks、Hysteria2 等协议。
 - Adblock 域名过滤，默认使用较轻量的 AdAway 和 Yoyo 规则。
 - 动态域名设置及简体中文语言包。
 
 代理节点和订阅由使用者在刷机后填写。Adblock 的规则需要首次联网下载；
 域名过滤无法屏蔽同一域名提供的所有视频广告。AX3000T 内存为 256 MiB，
-本配置只启用 Xray；如果需要 Hysteria2 或 TUIC，应单独增加相应内核后重新构建。
+本配置只启用 Xray；如果需要其他代理内核，应单独选择后重新构建。
 
 ## 在 Codespaces 构建
 

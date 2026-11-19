@@ -72,6 +72,10 @@ def main():
             if translated.is_symlink() and translated.resolve() == original.resolve():
                 translated.unlink()
             original.rename(translated)
+    shutil.copyfile(
+        RESOURCES / "passwall2-extra.zh_Hans.po",
+        passwall / "po/zh_Hans/passwall2-extra.po",
+    )
 
     feed_config = "".join(
         f"src-git {name} {source['url']}^{source['revision']}\n"
