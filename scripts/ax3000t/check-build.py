@@ -14,7 +14,8 @@ REQUIRED = [
     "luci", "luci-ssl", "luci-theme-argon", "luci-app-mtwifi-cfg",
     "luci-app-firewall", "luci-app-opkg", "luci-app-upnp", "luci-app-ddns",
     "luci-app-adblock", "adblock", "luci-app-passwall2", "xray-core",
-    "geoview", "chinadns-ng", "lyaml", "dnsmasq-full", "firewall",
+    "geoview", "chinadns-ng", "lyaml", "v2ray-geoip", "v2ray-geosite",
+    "dnsmasq-full", "firewall",
     "iptables-mod-tproxy", "kmod-ipt-tproxy", "kmod-mt_wifi",
     "luci-i18n-base-zh-cn", "luci-i18n-firewall-zh-cn",
     "luci-i18n-opkg-zh-cn", "luci-i18n-mtwifi-cfg-zh-cn",
@@ -24,6 +25,15 @@ REQUIRED = [
 
 
 def check_config():
+    sources = json.loads((ROOT / "scripts/ax3000t/feeds.lock.json").read_text())
+    preferred = {"passwall_packages": sources["passwall_packages"]["paths"],
+                 "passwall2": ["luci-app-passwall2"]}
+    for feed, names in preferred.items():
+        for name in names:
+            expected = ROOT / "feeds" / feed / name
+            installed = list((ROOT / "package/feeds").glob(f"*/{name}"))
+            if len(installed) != 1 or installed[0].resolve() != expected.resolve():
+                raise SystemExit(f"软件源选择错误或存在重复组件：{name}")
     lines = (ROOT / ".config").read_text().splitlines()
     enabled = {line[:-2] for line in lines if line.endswith("=y")}
     target = f"CONFIG_TARGET_mediatek_mt7981_DEVICE_{DEVICE}"
@@ -54,6 +64,11 @@ def check_image():
     missing = set(REQUIRED) - packages
     if missing:
         raise SystemExit("镜像缺少必需软件包：" + "、".join(sorted(missing)))
+    versions = {line.split()[0]: line.split()[-1]
+                for line in manifests[0].read_text().splitlines() if line}
+    for name, version in {"xray-core": "26.11.9", "luci-app-passwall2": "26.11.11"}.items():
+        if not versions.get(name, "").startswith(version + "-"):
+            raise SystemExit(f"镜像中的代理组件版本不匹配：{name} {versions.get(name)}")
     with tarfile.open(image) as archive:
         files = {Path(member.name).name: member.size for member in archive.getmembers()
                  if member.isfile()}

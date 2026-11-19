@@ -83,11 +83,24 @@ def main():
     )
     (ROOT / "feeds.conf").write_text(feed_config)
     run("./scripts/feeds", "update", "-i", "-a")
-    run("./scripts/feeds", "install", "-a")
+
+    # 此分支的强制选项不能替换其他软件源已安装的同名定义。
+    # 先移除同名软件源链接，再优先安装指定版本，防止退回过期组件。
+    preferred = sources["passwall_packages"]["paths"] + ["luci-app-passwall2"]
+    for feed_dir in (ROOT / "package/feeds").glob("*"):
+        for name in preferred:
+            link = feed_dir / name
+            if link.is_symlink():
+                link.unlink()
+            elif link.exists():
+                raise SystemExit(f"软件源路径包含本地文件，停止以保留现有工作：{link}")
+    package_info = ROOT / "tmp/.packageinfo"
+    if package_info.exists():
+        package_info.unlink()
     run("./scripts/feeds", "install", "-f", "-p", "passwall_packages",
-        "xray-core", "geoview", "chinadns-ng", "tcping",
-        "v2ray-geoip", "v2ray-geosite")
+        *sources["passwall_packages"]["paths"])
     run("./scripts/feeds", "install", "-f", "-p", "passwall2", "luci-app-passwall2")
+    run("./scripts/feeds", "install", "-a")
 
     defaults = ROOT / "files/etc/uci-defaults/zzz-ax3000t-defaults"
     defaults.parent.mkdir(parents=True, exist_ok=True)
