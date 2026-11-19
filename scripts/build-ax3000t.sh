@@ -1,4 +1,5 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
 set -euo pipefail
 
 ax3000t_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
@@ -32,14 +33,14 @@ case "$ax3000t_action" in
 		;;
 	build)
 		if [ "$(uname -m)" != x86_64 ]; then
-			printf '%s\n' '完整构建要求使用 AMD64 主机；其他主机可以准备并检查配置。' >&2
+			printf '%s\n' '完整构建要求 AMD64 主机。' >&2
 			exit 1
 		fi
 		python3 scripts/ax3000t/check-build.py config
 		ax3000t_available_kb=$(df -Pk . | awk 'NR == 2 {print $4}')
 		if ! compgen -G 'staging_dir/toolchain-*/stamp/.gcc_final_installed' >/dev/null && \
 			[ "$ax3000t_available_kb" -lt 26214400 ]; then
-			printf '%s\n' '首次完整构建需要至少 25 GiB 可用空间，请先更换构建环境。' >&2
+			printf '%s\n' '首次完整构建需 25 GiB 可用空间。' >&2
 			exit 1
 		fi
 		mkdir -p logs
@@ -51,12 +52,17 @@ case "$ax3000t_action" in
 		python3 scripts/ax3000t/check-build.py image
 		./scripts/diffconfig.sh > bin/targets/mediatek/mt7981/ax3000t-stock.diffconfig
 		git rev-parse HEAD > bin/targets/mediatek/mt7981/ax3000t-source-commit.txt
-		cp scripts/ax3000t/feeds.lock.json bin/targets/mediatek/mt7981/ax3000t-feeds.lock.json
-		(cd bin/targets/mediatek/mt7981 && sha256sum *xiaomi_mi-router-ax3000t-stock-squashfs-sysupgrade.bin > ax3000t-stock.sha256)
-		printf '%s\n' '构建完成，固件和校验文件位于 bin/targets/mediatek/mt7981/。'
+		cp scripts/ax3000t/feeds.lock.json \
+			bin/targets/mediatek/mt7981/ax3000t-feeds.lock.json
+		(
+			cd bin/targets/mediatek/mt7981
+			sha256sum *xiaomi_mi-router-ax3000t-stock-squashfs-sysupgrade.bin \
+				> ax3000t-stock.sha256
+		)
+		printf '%s\n' '构建完成：bin/targets/mediatek/mt7981/'
 		;;
 	*)
-		printf '%s\n' '用法：bash scripts/build-ax3000t.sh prepare|check|download|build' >&2
+		printf '%s\n' '用法：build-ax3000t.sh prepare|check|download|build' >&2
 		exit 1
 		;;
 esac

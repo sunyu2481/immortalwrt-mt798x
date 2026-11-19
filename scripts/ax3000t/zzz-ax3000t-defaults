@@ -1,4 +1,5 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-only
 
 # 在基础设置之后应用中文界面和主题。
 uci -q batch <<'EOF'
