@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# 在基础设置之后应用中文界面和主题。
+uci -q batch <<'EOF'
+set luci.main.lang='zh_cn'
+set luci.main.mediaurlbase='/luci-static/argon'
+set system.@system[0].timezone='CST-8'
+set system.@system[0].zonename='Asia/Shanghai'
+set adblock.global.adb_enabled='1'
+set adblock.global.adb_dns='dnsmasq'
+set adblock.global.adb_forcedns='0'
+set adblock.global.adb_maxqueue='1'
+set adblock.global.adb_report='0'
+set adblock.global.adb_backup='0'
+delete adblock.global.adb_sources
+add_list adblock.global.adb_sources='adaway'
+add_list adblock.global.adb_sources='yoyo'
+commit luci
+commit system
+commit adblock
+EOF
+
+exit 0

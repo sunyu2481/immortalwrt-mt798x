@@ -1,0 +1,20 @@
+{
+  "name": "AX3000T 联发科 V1 原厂分区构建",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "vscode",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "16gb",
+    "storage": "32gb"
+  },
+  "postCreateCommand": "bash scripts/build-ax3000t.sh prepare",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-ceintl.vscode-language-pack-zh-hans"
+      ]
+    }
+  }
+}

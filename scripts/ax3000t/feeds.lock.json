@@ -1,0 +1,33 @@
+{
+  "packages": {
+    "url": "https://github.com/immortalwrt/packages.git",
+    "revision": "e09f3c7d1903cfe7f523e209ab3ec778013ba309"
+  },
+  "luci": {
+    "url": "https://github.com/immortalwrt/luci.git",
+    "revision": "5829eabba50ec0afa17d2ee486bc90dc15180c34"
+  },
+  "routing": {
+    "url": "https://github.com/openwrt/routing.git",
+    "revision": "a9e43101bb726070cbf81b6225fc0625f4a4a5e5"
+  },
+  "telephony": {
+    "url": "https://github.com/openwrt/telephony.git",
+    "revision": "920fbc5c0a2e4badf51bceff42e9a1e3eb693462"
+  },
+  "passwall_packages": {
+    "url": "https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git",
+    "revision": "8147e8bf8abc62b5357f76defa37f380e35f6e0a",
+    "paths": [
+      "chinadns-ng",
+      "geoview",
+      "tcping",
+      "v2ray-geodata",
+      "xray-core"
+    ]
+  },
+  "passwall2": {
+    "url": "https://github.com/Openwrt-Passwall/openwrt-passwall2.git",
+    "revision": "a32c046760c5fcbb018607824341ed42f4d50ba6"
+  }
+}
